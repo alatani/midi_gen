@@ -1,0 +1,4 @@
+midi/
+data/
+.ipynb_checkpoints/
+*.ipynb
