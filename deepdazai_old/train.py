@@ -21,13 +21,14 @@ def run():
     args.stacked_rnn_layers = 3
     args.seq_length = 20
     args.grad_clip = 5.0
-    args.n = 400
+    args.n = 300
 
     ## args
-    args.num_epochs = 20
+    args.num_epochs = 2
     learning_rate = 0.0007
     decay_rate = 0.97
     save_every = 100
+
 
 
     data_dir = "/Users/a14139/workspace/mml/lstm/dataset/dazai"
@@ -53,8 +54,8 @@ def run():
 
 
         #tensorboard
-        merged = tf.merge_all_summaries()
-        writer = tf.train.SummaryWriter("/tmp/tensorflow_log", sess.graph_def)
+        merged = tf.summary.merge_all()
+        writer = tf.train.SummaryWriter("/tmp/tensorflow_log", sess.graph)
 
         #restore model
         for e in range(args.num_epochs):
@@ -62,16 +63,15 @@ def run():
             data_loader.reset_batch_pointer()
             state = model.initial_state.eval()
 
-            mergedResult = sess.run(merged)
-            writer.add_summary(mergedResult[0], e)
 
             for b in range(data_loader.num_batches):
                 start = time.time()
                 x, y = data_loader.next_batch()
                 feed = {model.input_data: x, model.targets: y, model.initial_state: state}
-                train_loss, state, _ = sess.run([model.cost, model.final_state, model.train_op], feed)
-                end = time.time()
+                merged_result, train_loss, state, _ = sess.run([merged, model.cost, model.final_state, model.train_op], feed)
+                writer.add_summary(merged_result[0], e)
 
+                end = time.time()
 
                 global_step = sess.run(model.global_step)
                 print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}" \

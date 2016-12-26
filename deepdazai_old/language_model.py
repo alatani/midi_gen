@@ -5,7 +5,7 @@ class LanguageModel:
     def __init__(self, args, infer=False):
 
         import tensorflow as tf
-        from tensorflow.models.rnn import seq2seq, rnn_cell
+        from tensorflow.python.ops import seq2seq, rnn_cell
 
         if infer:
             args.batch_size = 1
