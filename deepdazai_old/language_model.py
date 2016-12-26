@@ -1,7 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import time
-
 
 class LanguageModel:
     def __init__(self, args, infer=False):

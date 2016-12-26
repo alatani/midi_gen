@@ -1,5 +1,5 @@
 import tensorflow as tf
-from deepdazai.language_model import LanguageModel
+from deepdazai_old.language_model import LanguageModel
 from utils.training_saver import TrainingSaver
 
 def run():
