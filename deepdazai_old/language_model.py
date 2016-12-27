@@ -48,6 +48,9 @@ class LanguageModel:
 
         self.global_step = tf.Variable(0, name='global_step', trainable=False)
         self.cost = tf.reduce_sum(loss) / args.batch_size / args.seq_length
+
+        tf.summary.scalar("cost", self.cost)
+
         self.final_state = last_state
         self.lr = tf.Variable(0.0, trainable=False)
         tvars = tf.trainable_variables()
