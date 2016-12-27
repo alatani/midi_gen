@@ -32,24 +32,25 @@ def run():
 
 
     data_dir = "/Users/a14139/workspace/mml/lstm/dataset/dazai"
+    data_dir = "/Users/a14139/workspace/mml/lstm/dataset/dazai_tiny"
     data_loader = TextLoader(data_dir, args.batch_size, args.seq_length)
     args.vocab_size = data_loader.vocab_size
 
-    new_args = saver.restore_args(args)
-    if not replace_args:
-        args = new_args
-    else:
-        print("replaced old args with new setting")
-
-    data_loader = saver.restore_data(data_loader)
+    ##リストアする場合はコメントを外す
+    #new_args = saver.restore_args(args)
+    #if not replace_args:
+    #    args = new_args
+    #else:
+    #    print("replaced old args with new setting")
+    #data_loader = saver.restore_data(data_loader)
 
     model = LanguageModel(args, False)
 
 
     with tf.Session() as sess:
-        tf.initialize_all_variables().run()
+        tf.global_variables_initializer().run()
 
-        saver.restore_model(sess)
+        #saver.restore_model(sess)
         first_global_step = sess.run(model.global_step)
 
 
@@ -59,15 +60,19 @@ def run():
 
         #restore model
         for e in range(args.num_epochs):
+            print("epoch %d" % e)
             sess.run(tf.assign(model.lr, learning_rate * (decay_rate ** e)))
             data_loader.reset_batch_pointer()
-            state = model.initial_state.eval()
-
+            print(model.initial_state)
+            #state = model.initial_state.eval()
+            state = sess.run(model.initial_state)
+            print("state",state)
 
             for b in range(data_loader.num_batches):
                 start = time.time()
                 x, y = data_loader.next_batch()
                 feed = {model.input_data: x, model.targets: y, model.initial_state: state}
+                print("merged",merged)
                 merged_result, train_loss, state, _ = sess.run([merged, model.cost, model.final_state, model.train_op], feed)
                 writer.add_summary(merged_result[0], e)
 
